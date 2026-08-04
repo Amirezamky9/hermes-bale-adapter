@@ -1,32 +1,80 @@
-# Python
+# ── Secrets / sensitive ─────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.jks
+secrets/
+credentials.json
+token*.txt
+
+# ── Python ───────────────────────────────────────────────────────────
 __pycache__/
 *.py[cod]
 *$py.class
-*.egg-info/
-dist/
+*.so
+.Python
 build/
+develop-eggs/
+dist/
+downloads/
+eggs/
 .eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
 *.egg
+MANIFEST
 
-# IDE
+# ── Virtual environments ─────────────────────────────────────────────
+venv/
+.venv/
+env/
+ENV/
+.conda/
+
+# ── Testing / coverage ───────────────────────────────────────────────
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+.hypothesis/
+
+# ── IDEs / editors ───────────────────────────────────────────────────
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
+.DS_Store
+*.iml
 
-# OS
+# ── Logs / runtime ───────────────────────────────────────────────────
+*.log
+logs/
+*.pid
+*.seed
+*.sqlite
+*.sqlite3
+runtime/
+
+# ── Hermes runtime state (never commit) ──────────────────────────────
+*.state.json
+gateway_state.json
+gateway.pid
+webui.pid
+
+# ── OS ───────────────────────────────────────────────────────────────
 .DS_Store
 Thumbs.db
-
-# Virtual environments
-.venv/
-venv/
-env/
-
-# Environment files
-.env
-.env.*
-
-# Logs
-*.log
