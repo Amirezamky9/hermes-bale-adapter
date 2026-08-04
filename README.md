@@ -59,6 +59,18 @@ gateway:
 hermes gateway restart
 ```
 
+## 📚 مستندات
+
+برای یک راهنمای کامل و ساختاریافته (آموزش، نصب، شخصی‌سازی، مرجع، معماری) این بخش‌ها را بخوانید:
+
+| بخش | شرح | 
+|-----|------|
+| [آموزش راه‌اندازی سریع](docs/tutorial-getting-started.md) | از صفر تا اولین پیام در ۵ گام |
+| [راهنمای نصب کامل](docs/howto-install.md) | نصب گام‌به‌گام روی هر سیستم‌عامل |
+| [راهنمای شخصی‌سازی](docs/howto-customize.md) | محدود کردن دسترسی و تنظیمات پیشرفته |
+| [مرجع فنی](docs/reference-technical.md) | تمام گزینه‌ها و متغیرهای محیطی |
+| [معماری: چرا کپی از تلگرام؟](docs/explanation-architecture.md) | چرا و چگونه این پلاگین ساخته شد |
+
 ## 📁 ساختار فایل‌ها
 
 ```
@@ -66,7 +78,11 @@ hermes gateway restart
 ├── plugin.yaml      # متادیتا و تنظیمات
 ├── __init__.py      # Package init
 ├── adapter.py       # کلاس اصلی BaleAdapter
-├── test_adapter.py  # اسکریپت تست
+├── bale_ids.py      # نرمال‌سازی شناسه چت
+├── bale_network.py  # ترابرد شبکهٔ جایگزین
+├── tests/           # تست‌های اتصال
+├── docs/            # مستندات (همین مجموعه)
+├── .env.example     # نمونهٔ متغیرهای محیطی
 └── README.md        # این فایل
 ```
 
