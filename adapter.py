@@ -2658,7 +2658,7 @@ class BaleAdapter(BasePlatformAdapter):
                     BotCommandScopeAllGroupChats,
                     BotCommandScopeDefault,
                 )
-                from hermes_cli.commands import telegram_menu_commands, telegram_menu_max_commands
+                from hermes_cli.commands_platforms import telegram_menu_commands, telegram_menu_max_commands
                 if not self._bot:
                     return
                 # Telegram allows up to 100 commands but has an undocumented
@@ -2748,16 +2748,17 @@ class BaleAdapter(BasePlatformAdapter):
             )
             return False
         
-        if not self.config.token:
+        token = self.config.token or os.getenv("BALE_BOT_TOKEN", "")
+        if not token:
             logger.error("[%s] No bot token configured", self.name)
             return False
-        
+
         try:
-            if not self._acquire_platform_lock('bale-bot-token', self.config.token, 'Bale bot token'):
+            if not self._acquire_platform_lock('bale-bot-token', token, 'Bale bot token'):
                 return False
 
             # Build the application — Bale API base URL by default
-            builder = Application.builder().token(self.config.token)
+            builder = Application.builder().token(token)
             custom_base_url = self.config.extra.get("base_url") or "https://tapi.bale.ai/bot"
             if custom_base_url:
                 builder = builder.base_url(custom_base_url)
@@ -4489,7 +4490,7 @@ class BaleAdapter(BasePlatformAdapter):
         so all surfaces stay consistent.
         """
         try:
-            from hermes_cli.models import group_providers
+            from hermes_cli.models_catalog_static import group_providers
         except Exception:
             group_providers = None
 
@@ -4867,7 +4868,7 @@ class BaleAdapter(BasePlatformAdapter):
             # --- Provider group selected: show member providers ---
             group_id = data[4:]
             try:
-                from hermes_cli.models import PROVIDER_GROUPS
+                from hermes_cli.models_catalog_static import PROVIDER_GROUPS
                 _label, _desc, member_slugs = PROVIDER_GROUPS.get(group_id, ("", "", []))
             except Exception:
                 _label, member_slugs = "", []
@@ -6924,7 +6925,7 @@ class BaleAdapter(BasePlatformAdapter):
                 if chat_id in self._forum_command_registered:
                     return
                 from telegram import BotCommand, BotCommandScopeChat
-                from hermes_cli.commands import telegram_menu_commands, telegram_menu_max_commands
+                from hermes_cli.commands_platforms import telegram_menu_commands, telegram_menu_max_commands
                 menu_commands, _ = telegram_menu_commands(max_commands=telegram_menu_max_commands())
                 bot_commands = [BotCommand(name, desc) for name, desc in menu_commands]
                 await self._bot.set_my_commands(bot_commands, scope=BotCommandScopeChat(chat_id=chat_id))
@@ -8055,8 +8056,21 @@ def _resolve_notifications_mode() -> str:
 
 
 def _build_adapter(config):
-    """Factory wrapper that constructs BaleAdapter and applies the
-    notification mode (preserving the gateway/run.py post-construction step)."""
+    """Construct BaleAdapter, loading its token from the profile env file.
+
+    Some gateway launchers parse platform secrets without exporting them into
+    ``os.environ``. Keep the token out of YAML while still populating the
+    platform config expected by the adapter.
+    """
+    if not getattr(config, "token", None):
+        env_path = _Path(os.environ.get("HERMES_HOME", str(_Path.home() / ".hermes"))) / ".env"
+        try:
+            for line in env_path.read_text(encoding="utf-8").splitlines():
+                if line.startswith("BALE_BOT_TOKEN="):
+                    config.token = line.split("=", 1)[1].strip()
+                    break
+        except OSError:
+            pass
     adapter = BaleAdapter(config)
     try:
         adapter._notifications_mode = _resolve_notifications_mode()
